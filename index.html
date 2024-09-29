@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodPanda Clone</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .city-section {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .restaurant-card {
+            margin: 15px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .food-card {
+            margin: 15px 0;
+            transition: box-shadow 0.2s;
+        }
+
+        .food-card:hover {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        #banner {
+            width: 100%;
+            height: 250px;
+            background-image: url('https://images.deliveryhero.io/image/foodpanda/homepage/refresh-hero-home-pk.png');
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 20px;
+        }
+
+        #logo {
+            width: 150px;
+        }
+
+        .rating {
+            color: gold;
+        }
+
+        .order-form,
+        .payment-success {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+        }
+
+        .order-container,
+        .payment-message {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            #logo {
+                width: 100px;
+            }
+        }
+
+        .success-message {
+            color: green;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#home"><img id="logo" src="https://i.pinimg.com/736x/65/e2/77/65e277f2562cca74aa5809fec70cda5d.jpg" alt="Logo"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('home')">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('about')">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('eating-items')">Eating Items</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('contact')">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5" id="home">
+        <div id="banner"></div>
+        <h1>FoodPanda Clone</h1>
+        <input type="text" id="searchCity" class="form-control" placeholder="Enter city name and press Enter">
+        <div id="searchResults" style="display: none;">
+            <h3 class="mt-4">Top 3 Restaurants:</h3>
+            <div class="row" id="resultContainer"></div>
+        </div>
+
+        <div class="mt-5">
+            <h3>Cities:</h3>
+            <ul class="list-group">
+                <li class="list-group-item" onclick="showCity('karachi')">Karachi</li>
+                <li class="list-group-item" onclick="showCity('islamabad')">Islamabad</li>
+                <li class="list-group-item" onclick="showCity('lahore')">Lahore</li>
+            </ul>
+        </div>
+
+        <div id="karachi" class="city-section">
+            <h3>Restaurants in Karachi</h3>
+            <button class="btn btn-secondary mb-3" onclick="backToHome()">Back to Home</button>
+            <div class="row" id="karachi-restaurants"></div>
+        </div>
+
+        <div id="islamabad" class="city-section">
+            <h3>Restaurants in Islamabad</h3>
+            <button class="btn btn-secondary mb-3" onclick="backToHome()">Back to Home</button>
+            <div class="row" id="islamabad-restaurants"></div>
+        </div>
+
+        <div id="lahore" class="city-section">
+            <h3>Restaurants in Lahore</h3>
+            <button class="btn btn-secondary mb-3" onclick="backToHome()">Back to Home</button>
+            <div class="row" id="lahore-restaurants"></div>
+        </div>
+    </div>
+
+    <div class="container mt-5" id="about" style="display:none;">
+        <h2>About Us</h2>
+        <p>Welcome to FoodPanda Clone! We aim to provide the best food delivery service with a variety of restaurants to choose from. Enjoy your meal!</p>
+        <button class="btn btn-secondary mb-3" onclick="backToHome()">Back to Home</button>
+    </div>
+
+    <div class="container mt-5" id="eating-items" style="display:none;">
+        <h2>Eating Items</h2>
+        <p>Explore our wide range of food items available for delivery. From fast food to gourmet meals, we have it all!</p>
+        <div class="row" id="foodItemsContainer">
+            <!-- Food Items Images -->
+            <div class="col-md-3">
+                <div class="card food-card">
+                    <img src="https://t3.ftcdn.net/jpg/06/36/30/26/360_F_636302609_Tb1JtDTQ4zawO0ub6L2fHzlrW586f9tr.jpg" class="card-img-top" alt="Pizza">
+                    <div class="card-body">
+                        <h5 class="card-title">Pizza</h5>
+                        <p class="card-text">Delicious cheese pizza</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card food-card">
+                    <img src="https://img.freepik.com/free-photo/delicious-burguer-isolated-white-background_125540-3368.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1727481600&semt=ais_hybrid" class="card-img-top" alt="Burger">
+                    <div class="card-body">
+                        <h5 class="card-title">Burger</h5>
+                        <p class="card-text">Juicy beef burger</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card food-card">
+                    <img src="https://w7.pngwing.com/pngs/960/168/png-transparent-pasta-salad-on-plate-penne-caesar-salad-pasta-salad-italian-cuisine-pizza-pasta-food-recipe-american-food-thumbnail.png" class="card-img-top" alt="Pasta">
+                    <div class="card-body">
+                        <h5 class="card-title">Pasta</h5>
+                        <p class="card-text">Creamy Alfredo pasta</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card food-card">
+                    <img src="https://w7.pngwing.com/pngs/1004/95/png-transparent-egg-roll-spring-roll-doner-kebab-borek-meat-food-recipe-american-food.png" class="card-img-top" alt="Sushi">
+                    <div class="card-body">
+                        <h5 class="card-title">Sushi</h5>
+                        <p class="card-text">Fresh sushi rolls</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card food-card">
+                    <img src="https://i.pinimg.com/736x/40/2a/99/402a99c710f1da71b9f1f95632b70e08.jpg" class="card-img-top" alt="Salad">
+                    <div class="card-body">
+                        <h5 class="card-title">Salad</h5>
+                        <p class="card-text">Healthy green salad</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card food-card">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRugt-1qQNVZWsWRB0JuCL26gJrCe__5Gc9tA&s" class="card-img-top" alt="Ice Cream">
+                    <div class="card-body">
+                        <h5 class="card-title">Ice Cream</h5>
+                        <p class="card-text">Refreshing ice cream</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card food-card">
+                    <img src="https://t4.ftcdn.net/jpg/02/69/61/09/360_F_269610912_woky3s3Fm6F1fVcqvsMYwDSKdfiU07An.jpg" class="card-img-top" alt="Fries">
+                    <div class="card-body">
+                        <h5 class="card-title">Fries</h5>
+                        <p class="card-text">Crispy French fries</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card food-card">
+                    <img src="https://img.freepik.com/free-photo/delicious-taco-studio_23-2150799519.jpg" class="card-img-top" alt="Tacos">
+                    <div class="card-body">
+                        <h5 class="card-title">Tacos</h5>
+                        <p class="card-text">Spicy tacos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card food-card">
+                    <img src="https://pngimg.com/uploads/burger_sandwich/burger_sandwich_PNG4150.png" class="card-img-top" alt="Sandwich">
+                    <div class="card-body">
+                        <h5 class="card-title">Sandwich</h5>
+                        <p class="card-text">Grilled sandwich</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card food-card">
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/036/303/667/small_2x/ai-generated-tropical-cocktail-clipart-transparent-background-exotic-drinks-summer-beverages-cocktail-illustrations-fruity-cocktails-beach-party-graphics-vacation-drinks-png.png" class="card-img-top" alt="Beverage">
+                    <div class="card-body">
+                        <h5 class="card-title">Beverage</h5>
+                        <p class="card-text">Cool refreshing beverage</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-secondary mb-3" onclick="backToHome()">Back to Home</button>
+    </div>
+
+    <div class="container mt-5" id="contact" style="display:none;">
+        <h2>Contact Us</h2>
+        <form id="contactForm" onsubmit="submitForm(event)">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Your email" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea class="form-control" id="message" rows="3" placeholder="Your message" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div id="successMessage" class="alert alert-success mt-3" style="display:none;">Your Message Successfully Submitted!</div>
+        <button class="btn btn-secondary mb-3" onclick="backToHome()">Back to Home</button>
+    </div>
+
+    <!-- Order Form Modal -->
+    <div class="order-form" id="orderForm">
+        <div class="order-container">
+            <h2>Order Now</h2>
+            <form id="orderNowForm">
+                <div class="form-group">
+                    <label for="orderName">Name</label>
+                    <input type="text" class="form-control" id="orderName" placeholder="Your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="orderEmail">Email</label>
+                    <input type="email" class="form-control" id="orderEmail" placeholder="Your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="cardNumber">Card Number</label>
+                    <input type="text" class="form-control" id="cardNumber" placeholder="Card Number" required>
+                </div>
+                <div class="form-group">
+                    <label for="expiryDate">Expiry Date (MM/YY)</label>
+                    <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" required>
+                </div>
+                <div class="form-group">
+                    <label for="cvv">CVV</label>
+                    <input type="text" class="form-control" id="cvv" placeholder="CVV" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method</label>
+                    <select class="form-control" id="paymentMethod" required>
+                        <option value="">Select Payment Method</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="debit">Debit Card</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">Pay</button>
+                <button type="button" class="btn btn-secondary" onclick="closeOrderForm()">Close</button>
+            </form>
+            <div id="paymentSuccessMessage" class="alert alert-success mt-3" style="display:none;">Your Order has been successfully paid!</div>
+        </div>
+    </div>
+
+    <div class="payment-success" id="paymentSuccess">
+        <div class="payment-message">
+            <h3>Your Order has been successfully paid!</h3>
+            <button class="btn btn-secondary" onclick="closePaymentSuccess()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const restaurantData = {
+            karachi: [
+                { title: "Bistro 201", deliveryTime: "30 mins", ratings: 4.5, img: "https://images.deliveryhero.io/image/foodpanda/home-vendor-pk.jpg?width=2000&height=1280" },
+                { title: "Barbecue Tonight", deliveryTime: "45 mins", ratings: 4.7, img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/26/74/ea/db/sizzling-food-and-experiences.jpg?w=600&h=-1&s=1" },
+                { title: "Chaat Gali", deliveryTime: "20 mins", ratings: 4.6, img: "https://images.deliveryhero.io/image/fd-pk/LH/nule-listing.jpg?width=400&height=225" }
+            ],
+            islamabad: [
+                { title: "Monal", deliveryTime: "50 mins", ratings: 4.8, img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2b/53/30/09/it-is-all-about-the-sizzle.jpg?w=600&h=400&s=1" },
+                { title: "Sushi House", deliveryTime: "40 mins", ratings: 4.5, img: "https://denverspiceroom.com/wp-content/uploads/2020/02/Cook-2.jpeg" },
+                { title: "Street Food", deliveryTime: "30 mins", ratings: 4.6, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3HlsNeVewcjWtg_ZEoxtA4Rqu-4evfjwglvtC-qsQCvJKhc_1TizZa8TiTGbz5FZGraE&usqp=CAU" }
+            ],
+            lahore: [
+                { title: "Butt Karahi", deliveryTime: "35 mins", ratings: 4.7, img: "https://media-cdn.tripadvisor.com/media/photo-s/29/9a/a9/88/our-head-chef.jpg" },
+                { title: "Nando's", deliveryTime: "30 mins", ratings: 4.6, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaof6p39_yV3yjllizkQrOurzyLk2jp7RFmTUS8oBv4jZsfzsp7hOoVWUdbH1pWE_WCf0&usqp=CAU" },
+                { title: "Fast Food Place", deliveryTime: "25 mins", ratings: 4.5, img: "https://media-cdn.tripadvisor.com/media/photo-s/12/67/b6/58/the-buffet-experience.jpg" }
+            ]
+        };
+
+        const foodItems = [
+            { name: "Pizza", img: "https://t3.ftcdn.net/jpg/06/36/30/26/360_F_636302609_Tb1JtDTQ4zawO0ub6L2fHzlrW586f9tr.jpg", description: "Delicious cheese pizza" },
+            { name: "Burger", img: "https://img.freepik.com/free-photo/delicious-burguer-isolated-white-background_125540-3368.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1727481600&semt=ais_hybrid", description: "Juicy beef burger" },
+            { name: "Pasta", img: "https://w7.pngwing.com/pngs/960/168/png-transparent-pasta-salad-on-plate-penne-caesar-salad-pasta-salad-italian-cuisine-pizza-pasta-food-recipe-american-food-thumbnail.png", description: "Creamy Alfredo pasta" },
+            { name: "Sushi", img: "https://w7.pngwing.com/pngs/1004/95/png-transparent-egg-roll-spring-roll-doner-kebab-borek-meat-food-recipe-american-food.png", description: "Fresh sushi rolls" },
+            { name: "Salad", img: "https://i.pinimg.com/736x/40/2a/99/402a99c710f1da71b9f1f95632b70e08.jpg", description: "Healthy green salad" },
+            { name: "Ice Cream", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRugt-1qQNVZWsWRB0JuCL26gJrCe__5Gc9tA&s", description: "Refreshing ice cream" },
+            { name: "Fries", img: "https://t4.ftcdn.net/jpg/02/69/61/09/360_F_269610912_woky3s3Fm6F1fVcqvsMYwDSKdfiU07An.jpg", description: "Crispy French fries" },
+            { name: "Tacos", img: "https://img.freepik.com/free-photo/delicious-taco-studio_23-2150799519.jpg", description: "Spicy tacos" },
+            { name: "Sandwich", img: "https://pngimg.com/uploads/burger_sandwich/burger_sandwich_PNG4150.png", description: "Grilled sandwich" },
+            { name: "Beverage", img: "https://static.vecteezy.com/system/resources/thumbnails/036/303/667/small_2x/ai-generated-tropical-cocktail-clipart-transparent-background-exotic-drinks-summer-beverages-cocktail-illustrations-fruity-cocktails-beach-party-graphics-vacation-drinks-png.png", description: "Cool refreshing beverage" }
+        ];
+
+        function showSection(section) {
+            document.querySelectorAll('.container').forEach(container => {
+                container.style.display = 'none';
+            });
+            document.getElementById(section).style.display = 'block';
+        }
+
+        function backToHome() {
+            showSection('home');
+        }
+
+        function showCity(city) {
+            document.querySelectorAll('.city-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(city).style.display = 'block';
+            loadRestaurants(city);
+        }
+
+        function loadRestaurants(city) {
+            const restaurants = restaurantData[city];
+            const restaurantContainer = document.getElementById(`${city}-restaurants`);
+            restaurantContainer.innerHTML = '';
+
+            restaurants.forEach(restaurant => {
+                const card = document.createElement('div');
+                card.className = 'col-md-4';
+                card.innerHTML = `
+                    <div class="card restaurant-card">
+                        <img src="${restaurant.img}" class="card-img-top" alt="${restaurant.title}">
+                        <div class="card-body">
+                            <h5 class="card-title">${restaurant.title}</h5>
+                            <p class="card-text">Delivery Time: ${restaurant.deliveryTime}</p>
+                            <p class="rating">Rating: ${restaurant.ratings} ★</p>
+                            <button class="btn btn-warning" onclick="openOrderForm('${restaurant.title}')">Order Now</button>
+                        </div>
+                    </div>
+                `;
+                restaurantContainer.appendChild(card);
+            });
+        }
+
+        document.getElementById('searchCity').addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+                const city = event.target.value.toLowerCase();
+                showCity(city);
+            }
+        });
+
+        function submitForm(event) {
+            event.preventDefault();
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('contactForm').reset();
+        }
+
+        function openOrderForm(restaurantName) {
+            const orderForm = document.getElementById('orderForm');
+            orderForm.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            document.getElementById('orderNowForm').reset(); // Reset form fields
+            document.getElementById('orderRestaurantName').innerText = restaurantName; // Show restaurant name in order form
+        }
+
+        function closeOrderForm() {
+            document.getElementById('orderForm').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Enable background scrolling
+        }
+
+        document.getElementById('orderNowForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            // Hide the order form and show the success message
+            closeOrderForm(); // Close the order form
+            showPaymentSuccess(); // Show payment success message
+        });
+
+        function showPaymentSuccess() {
+            const paymentSuccess = document.getElementById('paymentSuccess');
+            paymentSuccess.style.display = 'flex';
+        }
+
+        function closePaymentSuccess() {
+            document.getElementById('paymentSuccess').style.display = 'none'; // Hide payment success message
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
